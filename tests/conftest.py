@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 
-from app.dependencies import get_info_cache, get_yfinance_client
+from app.dependencies import get_info_cache, get_isin_cache, get_yfinance_client
 from app.main import app
 from app.utils.cache import SnapshotCache, TTLCache
 from tests.unit.clients.fake_client import FakeYFinanceClient
@@ -20,6 +20,7 @@ def mock_yfinance_client(mocker):
     client_instance.get_history = AsyncMock()
     client_instance.get_earnings = AsyncMock()
     client_instance.get_news = AsyncMock()
+    client_instance.get_isin_data = AsyncMock()
     client_instance.ping = AsyncMock()
     return client_instance
 
@@ -33,6 +34,7 @@ def client(mock_yfinance_client):
     # Also override cache for snapshot tests
     app.dependency_overrides[get_info_cache] = lambda: TTLCache(size=32, ttl=300)
     app.dependency_overrides[get_earnings_cache] = lambda: SnapshotCache(maxsize=128, ttl=3600)
+    app.dependency_overrides[get_isin_cache] = lambda: TTLCache(size=32, ttl=86400)
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

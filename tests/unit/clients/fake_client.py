@@ -118,6 +118,16 @@ class FakeYFinanceClient(YFinanceClientInterface):
         # Providing a default empty series prevents integration tests from crashing
         return pd.Series(dtype=float)
 
+    async def get_isin_data(self, isin: str) -> dict:
+        """Return deterministic fake ISIN resolution data."""
+        return {
+            "symbol": "FAKE",
+            "shortname": "Fake Company Inc.",
+            "longname": "Fake Company Incorporated",
+            "type": "EQUITY",
+            "exchange": "NasdaqGS",
+        }
+
     async def get_news(self, symbol: str, count: int, tab: str) -> list[dict[str, Any]]:
         """Return deterministic fake news items."""
         article = {

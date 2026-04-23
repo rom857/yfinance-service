@@ -57,6 +57,10 @@ class Settings(BaseSettings):
     news_cache_ttl: int = Field(3600, ge=0, validation_alias="NEWS_CACHE_TTL")
     news_cache_maxsize: int = Field(256, ge=0, validation_alias="NEWS_CACHE_MAXSIZE")
 
+    # ISIN lookup cache settings
+    isin_cache_ttl: int = Field(86400, ge=0, validation_alias="ISIN_CACHE_TTL")
+    isin_cache_maxsize: int = Field(512, ge=0, validation_alias="ISIN_CACHE_MAXSIZE")
+
     # News endpoint settings
     news_max_items: int = Field(100, ge=1, validation_alias="NEWS_MAX_ITEMS")
 

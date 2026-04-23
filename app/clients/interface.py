@@ -67,3 +67,8 @@ class YFinanceClientInterface(ABC):
     async def get_splits(self, symbol: str) -> pd.Series:
         """Fetch historical stock splits for a specific stock."""
         pass
+
+    @abstractmethod
+    async def get_isin_data(self, isin: str) -> Mapping[str, Any]:
+        """Resolve an ISIN to a ticker symbol and related metadata."""
+        pass

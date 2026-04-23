@@ -769,3 +769,38 @@ class YFinanceClient(YFinanceClientInterface):
             )
 
         return splits
+
+    async def get_isin_data(self, isin: str) -> YFinanceData:
+        """Resolve an ISIN to a ticker symbol and related metadata.
+
+        Args:
+            isin: The ISIN string (e.g., "US0378331005" for Apple).
+
+        Returns:
+            Dictionary containing ticker metadata: symbol, shortname, longname,
+            type, and exchange.
+
+        Raises:
+            HTTPException: 404 if no matching symbol is found for the given ISIN,
+                503 on upstream timeout, 500 for unexpected errors.
+
+        """
+        from functools import partial as _partial
+
+        import yfinance.utils as _yf_utils
+
+        result = await self._fetch_data_coalesced(
+            "isin",
+            _partial(_yf_utils.get_all_by_isin, isin),
+            isin,
+        )
+
+        ticker_data: dict = result.get("ticker", {}) if isinstance(result, dict) else {}
+        if not ticker_data.get("symbol"):
+            logger.info("yfinance.client.no_data", extra={"symbol": isin, "op": "isin"})
+            raise HTTPException(
+                status_code=404,
+                detail=f"No symbol found for ISIN: {isin}",
+            )
+
+        return ticker_data

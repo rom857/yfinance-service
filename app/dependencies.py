@@ -72,3 +72,15 @@ def get_news_cache() -> NewsCache:
         cache_name="news_cache",
         resource="news",
     )
+
+
+@lru_cache
+def get_isin_cache() -> TTLCache:
+    """Get a shared TTL cache for ISIN lookups (ISIN-to-symbol mappings are highly stable)."""
+    settings = get_settings()
+    return TTLCache(
+        size=settings.isin_cache_maxsize,
+        ttl=settings.isin_cache_ttl,
+        cache_name="ttl_cache",
+        resource="isin",
+    )
